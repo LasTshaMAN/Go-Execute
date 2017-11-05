@@ -7,7 +7,7 @@ import (
 
 func TestLifecycleConcurrent(t *testing.T) {
 	t.Run("shouldn't be able to start already running Executor in parallel", func(t *testing.T) {
-		executor := NewExecutor(4)
+		executor := NewExecutor(4, 4)
 		firstStarted := startExecutorInBackground(executor)
 
 		secondStarted := startExecutorInBackground(executor)

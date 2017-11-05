@@ -5,14 +5,25 @@ import "fmt"
 type Executor struct {
 	started  bool
 	jobQueue chan *Job
+	workers  []*Worker
 }
 
-func NewExecutor(queueSize int) *Executor {
+func NewExecutor(queueSize int, workersAmount int) *Executor {
 	if queueSize < 1 {
 		panic("queue size must be a positive number")
 	}
+	if workersAmount < 1 {
+		panic("amount of workers must be a positive number")
+	}
+
+	workers := make([]*Worker, workersAmount)
+	for i := 0; i < workersAmount; i++ {
+		workers = append(workers, NewWorker())
+	}
+
 	return &Executor{
 		jobQueue: make(chan *Job, queueSize),
+		workers:  workers,
 	}
 }
 
@@ -22,7 +33,9 @@ func (executor *Executor) Start() {
 	}
 	executor.started = true
 
-	executor.consumeJobQueue()
+	for _, worker := range executor.workers {
+		worker.Consume(executor.jobQueue)
+	}
 }
 
 func (executor *Executor) Stop() {
@@ -41,15 +54,4 @@ func (executor *Executor) Enqueue(function interface{}, args ...interface{}) err
 	executor.jobQueue <- job
 
 	return nil
-}
-
-func (executor *Executor) consumeJobQueue() {
-	go func() {
-		for {
-			select {
-			case job := <-executor.jobQueue:
-				go job.Execute()
-			}
-		}
-	}()
 }
