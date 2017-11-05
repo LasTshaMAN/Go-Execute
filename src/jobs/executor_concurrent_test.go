@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+// TODO - write tests for using Executor in multi-threaded environment
+
 func TestLifecycleConcurrent(t *testing.T) {
 	t.Run("shouldn't be able to start already running Executor in parallel", func(t *testing.T) {
 		executor := NewExecutor(4, 4)
