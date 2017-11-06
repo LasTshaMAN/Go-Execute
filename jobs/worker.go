@@ -5,7 +5,7 @@ import "time"
 type worker struct {
 }
 
-func NewWorker() *worker {
+func newWorker() *worker {
 	return &worker{}
 }
 

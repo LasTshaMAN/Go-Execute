@@ -8,13 +8,13 @@ import (
 
 func TestWorker(t *testing.T) {
 	t.Run("should be able to create a Worker", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 
 		assert.NotNil(t, worker)
 	})
 
 	t.Run("should refuse to consume nil job queue", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		var jobQueue chan func()
 
 		assert.Panics(t, func() {
@@ -23,7 +23,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should be able to consume empty job queue", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func())
 
 		assert.NotPanics(t, func() {
@@ -32,7 +32,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should take jobs from queue", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
@@ -43,7 +43,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should terminate gracefully when job queue is closed", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
@@ -54,7 +54,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should execute jobs taken from queue", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func(), 1)
 		out := make(chan bool)
 		jobQueue <- func() {
@@ -68,7 +68,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should execute jobs taken from queue", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func(), 1)
 		out := make(chan bool)
 		jobQueue <- func() {
@@ -82,7 +82,7 @@ func TestWorker(t *testing.T) {
 	})
 
 	t.Run("should execute only one job at a time according to queue's order", func(t *testing.T) {
-		worker := NewWorker()
+		worker := newWorker()
 		jobQueue := make(chan func(), 4)
 		firstJobFinished := false
 		jobQueue <- func() {

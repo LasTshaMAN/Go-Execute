@@ -29,7 +29,7 @@ func NewExecutor(queueSize int, workersAmount int) *Executor {
 
 	workers := make([]*worker, workersAmount)
 	for i := 0; i < workersAmount; i++ {
-		workers = append(workers, NewWorker())
+		workers = append(workers, newWorker())
 	}
 
 	jobQueue := make(chan func(), queueSize)
