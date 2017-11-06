@@ -2,25 +2,25 @@ package jobs
 
 import "time"
 
-type Worker struct {
+type worker struct {
 }
 
-func NewWorker() *Worker {
-	return &Worker{}
+func NewWorker() *worker {
+	return &worker{}
 }
 
-func (worker *Worker) Consume(jobQueue chan *Job) {
+func (worker *worker) Consume(jobQueue chan func()) {
 	if jobQueue == nil {
 		panic("can't consume nil job queue")
 	}
 	go func() {
 		for {
 			select {
-			case job, ok := <-jobQueue:
+			case function, ok := <-jobQueue:
 				if !ok {
 					return
 				}
-				job.Execute()
+				function()
 			default:
 				// Saving CPU resources
 				time.Sleep(time.Millisecond * 100)
