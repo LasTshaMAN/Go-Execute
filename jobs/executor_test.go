@@ -31,7 +31,7 @@ func TestJobEnqueueing(t *testing.T) {
 	t.Run("should be able to enqueue simple function for running", func(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
-		err := executor.Enqueue(func() {})
+		err := executor.EnqueueAsync(func() {})
 
 		assert.NoError(t, err)
 	})
@@ -40,7 +40,7 @@ func TestJobEnqueueing(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
 		someFunction := func(string, int) {}
-		err := executor.Enqueue(func() {
+		err := executor.EnqueueAsync(func() {
 			someFunction("one", 1)
 		})
 
@@ -51,7 +51,7 @@ func TestJobEnqueueing(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
 		assert.Panics(t, func() {
-			executor.Enqueue(nil)
+			executor.EnqueueAsync(nil)
 		})
 	})
 
@@ -59,11 +59,11 @@ func TestJobEnqueueing(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
 		for i := 0; i < 4; i++ {
-			err := executor.Enqueue(func() {})
+			err := executor.EnqueueAsync(func() {})
 			assert.NoError(t, err)
 		}
 
-		err := executor.Enqueue(func() {})
+		err := executor.EnqueueAsync(func() {})
 		assert.Error(t, err)
 	})
 }
@@ -73,7 +73,7 @@ func TestJobExecution(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
 		out := make(chan bool)
-		err := executor.Enqueue(func() {
+		err := executor.EnqueueAsync(func() {
 			out <- true
 		})
 
@@ -91,7 +91,7 @@ func TestJobExecution(t *testing.T) {
 			out <- true
 		}
 		for i := 0; i < jobsAmount; i++ {
-			err := executor.Enqueue(function)
+			err := executor.EnqueueAsync(function)
 			assert.NoError(t, err)
 		}
 
@@ -108,14 +108,14 @@ func TestJobExecution(t *testing.T) {
 			select {}
 		}
 		for i := 0; i < 5; {
-			err := executor.Enqueue(toughJob)
+			err := executor.EnqueueAsync(toughJob)
 			if err == nil {
 				time.Sleep(time.Millisecond)
 			}
 			i++
 		}
 
-		err := executor.Enqueue(toughJob)
+		err := executor.EnqueueAsync(toughJob)
 		assert.Error(t, err)
 	})
 }

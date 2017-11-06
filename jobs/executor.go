@@ -2,22 +2,23 @@ package jobs
 
 import "fmt"
 
-// Executor is designed to free its User from mixing his business logic with necessary management of go-routines.
+// Executor is an implementation of the "Thread-Pool design pattern". Its main purpose is to decouple business logic from the logic necessary for Go-routines management.
 //
-// Executor has a fixed amount of workers - go-routines that execute the actual work (you can specify their amount during Executor construction).
-// Executor accepts jobs for execution in the form of functions(and function arguments, if they are required for function to work) that you can enqueue for execution.
+// Executor has a fixed amount of workers - Go-routines that execute the actual work (you can specify their amount during Executor construction).
+// Executor accepts simple, yet flexible function (func() {}) that you can enqueue for execution.
 // Enqueued function will eventually be executed.
-// The order enqueued functions are run in is simply the order of executor.Enqueue(...) calls.
-// Jobs can be executed in parallel - and they will, if you specify workersAmount to be > 1.
+// The order enqueued functions are run in is simply the order of executor.EnqueueAsync(func() {}) calls.
+// Functions can be executed in parallel - and they will, if you specify workersAmount to be > 1.
 //
-// Executor can be used in multi-threaded environment (you can call its methods from different go-routines in parallel and expect it to work correctly).
+// Executor can be used in multi-threaded environment (you can enqueue functions from different Go-routines and expect Executor to work correctly).
 type Executor struct {
 	jobQueue chan func()
 }
 
-// NewExecutor returns a new Executor object for you to run your jobs against.
-// queueSize - specifies, how many jobs executor can guarantee to hold at any given time. You won't be able to enqueue new job for execution if job queue gets full. queueSize must be > 0.
-// workersAmount - specifies, how many workers(go-routines) executor will use to handle jobs, sent for execution. Executor will run its workers in parallel. workersAmount must be > 0.
+// NewExecutor returns a new Executor object - a means for you to enqueue your functions.
+//
+// queueSize - specifies, how many functions executor can easily hold (either in queue or executing them) at any given time. queueSize must be > 0.
+// workersAmount - specifies, how many workers(go-routines) Executor will use to handle functions, sent for execution. Executor will run its workers in parallel. workersAmount must be > 0.
 func NewExecutor(queueSize int, workersAmount int) *Executor {
 	if queueSize < 1 {
 		panic("queue size must be a positive number")
@@ -41,11 +42,16 @@ func NewExecutor(queueSize int, workersAmount int) *Executor {
 	}
 }
 
-// Enqueue is a means to schedule a job for running through Executor.
-// Enqueue returns an error if there already are too many jobs for Executor to handle at the moment. If Enqueue does return a error, you can try to enqueue (and succeed) your job at some time in the future.
-// function - any standard Golang function - a unit of work that will be scheduled for execution. function cannot be 'nil'.
-// args - arguments that function needs (could be none at all) in order to execute properly. args must match function signature.
-func (executor *Executor) Enqueue(function func()) error {
+// EnqueueAsync is a way for you to schedule a function for execution.
+// Enqueued function will eventually be executed at some point in the future.
+//
+// EnqueueAsync call doesn't block.
+// EnqueueAsync returns an error if there already are too many functions for Executor to handle at the moment.
+// If EnqueueAsync does return an error, you can try to enqueue your function (and succeed) at some time in the future.
+//
+// function - Golang function of the form "func() {}" - a unit of work that will be scheduled for execution as soon as there is a free worker to tackle it.
+// function cannot be 'nil'.
+func (executor *Executor) EnqueueAsync(function func()) error {
 	if function == nil {
 		panic("cannot enqueue 'nil' function for execution")
 	}
@@ -56,4 +62,16 @@ func (executor *Executor) Enqueue(function func()) error {
 	executor.jobQueue <- function
 
 	return nil
+}
+
+// Enqueue is a way for you to schedule a function for execution.
+// Enqueued function will eventually be executed at some point in the future.
+//
+// Enqueue call blocks until Executor is ready to accept the function you are trying to enqueue.
+//
+// function - Golang function of the form "func() {}" - a unit of work that will be scheduled for execution as soon as there is a free worker to tackle it.
+// function cannot be 'nil'.
+// TODO - to be implemented
+func (executor *Executor) Enqueue(function func()) {
+
 }
