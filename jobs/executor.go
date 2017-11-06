@@ -3,6 +3,7 @@ package jobs
 import "fmt"
 
 // Executor is designed to free its User from mixing his business logic with necessary management of go-routines.
+//
 // Executor has a fixed amount of workers - go-routines that execute the actual work (you can specify their amount during Executor construction).
 // Executor accepts jobs for execution in the form of functions(and function arguments, if they are required for function to work) that you can enqueue for execution.
 // Enqueued function will eventually be executed.
@@ -42,9 +43,12 @@ func NewExecutor(queueSize int, workersAmount int) *Executor {
 
 // Enqueue is a means to schedule a job for running through Executor.
 // Enqueue returns an error if there already are too many jobs for Executor to handle at the moment. If Enqueue does return a error, you can try to enqueue (and succeed) your job at some time in the future.
-// function - any standard Golang function - a unit of work that will be scheduled for execution. function can not be 'nil'.
+// function - any standard Golang function - a unit of work that will be scheduled for execution. function cannot be 'nil'.
 // args - arguments that function needs (could be none at all) in order to execute properly. args must match function signature.
 func (executor *Executor) Enqueue(function func()) error {
+	if function == nil {
+		panic("cannot enqueue 'nil' function for execution")
+	}
 	if len(executor.jobQueue) == cap(executor.jobQueue) {
 		return fmt.Errorf("executor queue is full at the moment")
 	}

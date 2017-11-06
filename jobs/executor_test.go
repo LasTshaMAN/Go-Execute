@@ -47,6 +47,14 @@ func TestJobEnqueueing(t *testing.T) {
 		assert.NoError(t, err)
 	})
 
+	t.Run("shouldn't be able to enqueue 'nil' function for running", func(t *testing.T) {
+		executor := NewExecutor(4, 4)
+
+		assert.Panics(t, func() {
+			executor.Enqueue(nil)
+		})
+	})
+
 	t.Run("shouldn't be able to enqueue function when Executor's queue is full", func(t *testing.T) {
 		executor := NewExecutor(4, 4)
 
