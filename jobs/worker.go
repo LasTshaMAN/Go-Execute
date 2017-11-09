@@ -1,6 +1,8 @@
 package jobs
 
-import "time"
+import (
+	"time"
+)
 
 type worker struct {
 }
@@ -9,7 +11,7 @@ func newWorker() *worker {
 	return &worker{}
 }
 
-func (worker *worker) Consume(jobQueue chan func()) {
+func (worker *worker) Consume(jobQueue <-chan func()) {
 	if jobQueue == nil {
 		panic("can't consume nil job queue")
 	}
