@@ -1,4 +1,4 @@
-package jobs
+package jobs_test
 
 // TODO - write tests for using Executor in multi-threaded environment
 

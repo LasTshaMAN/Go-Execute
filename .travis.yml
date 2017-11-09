@@ -1,6 +1,6 @@
 language: go
 go: 1.9
 script:
-  - go test -v -coverprofile=coverage.txt -covermode=atomic ./jobs
+  - go test -v -timeout 10s -coverprofile=coverage.txt -covermode=atomic ./jobs
 after_success:
   - bash <(curl -s https://codecov.io/bash)

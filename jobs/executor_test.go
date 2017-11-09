@@ -1,34 +1,35 @@
-package jobs
+package jobs_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"Go-Execute/jobs"
 )
 
 func TestBasicLifecycle(t *testing.T) {
 	t.Run("should be able to create Executor", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		assert.NotNil(t, executor)
 	})
 
 	t.Run("shouldn't be able to create Executor with 0 amount of workers", func(t *testing.T) {
 		assert.Panics(t, func() {
-			NewExecutor(0, 4)
+			jobs.NewExecutor(0, 4)
 		})
 	})
 
 	t.Run("shouldn't be able to create Executor with 0 queue size", func(t *testing.T) {
 		assert.Panics(t, func() {
-			NewExecutor(4, 0)
+			jobs.NewExecutor(4, 0)
 		})
 	})
 }
 
 func TestJobEnqueueing(t *testing.T) {
 	t.Run("should be able to enqueue simple function for running", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		executor.Enqueue(func() {})
 		err := executor.EnqueueAsync(func() {})
@@ -37,7 +38,7 @@ func TestJobEnqueueing(t *testing.T) {
 	})
 
 	t.Run("should be able to enqueue function with args for running", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		someFunction := func(string, int) {}
 		executor.Enqueue(func() {
@@ -51,7 +52,7 @@ func TestJobEnqueueing(t *testing.T) {
 	})
 
 	t.Run("shouldn't be able to enqueue 'nil' function for running", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		assert.Panics(t, func() {
 			executor.Enqueue(nil)
@@ -62,7 +63,7 @@ func TestJobEnqueueing(t *testing.T) {
 	})
 
 	t.Run("shouldn't be able to enqueue function asynchronously when Executor's queue is full", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		toughJob := func() {
 			select {}
@@ -78,7 +79,7 @@ func TestJobEnqueueing(t *testing.T) {
 
 func TestJobExecution(t *testing.T) {
 	t.Run("should execute enqueued function eventually", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		out := make(chan bool)
 		executor.Enqueue(func() {
@@ -90,10 +91,10 @@ func TestJobExecution(t *testing.T) {
 	})
 
 	t.Run("should execute multiple enqueued functions eventually", func(t *testing.T) {
-		executor := NewExecutor(4, 4)
+		executor := jobs.NewExecutor(4, 4)
 
 		jobsAmount := 16
-		out := make(chan bool, 8)
+		out := make(chan bool, 7)
 		function := func() {
 			out <- true
 		}
