@@ -16,7 +16,7 @@ import "fmt"
 // Make sure that the function you enqueue for execution won't block forever (e.g. writing in channel that won't ever be read from).
 // It will cause the corresponding worker to hang forever - thus leaking resources.
 //
-// Executor can be used in multi-threaded environment (you can enqueue functions from different go-routines and expect Executor to work correctly).
+// Executor is safe to use in multi-threaded environment (you can enqueue functions from different go-routines and expect Executor to work correctly).
 type Executor struct {
 	jobQueue chan func()
 }
@@ -58,6 +58,8 @@ func NewExecutor(workersAmount int, queueSize int) *Executor {
 //
 // function - simple Golang function - a unit of work that will be scheduled for execution as soon as there is a free worker to tackle it.
 // function cannot be 'nil'.
+//
+// TryToEnqueue is safe to use in multi-threaded environment
 func (executor *Executor) TryToEnqueue(function func()) error {
 	if len(executor.jobQueue) == cap(executor.jobQueue) {
 		return fmt.Errorf("executor queue is full at the moment")
@@ -75,6 +77,8 @@ func (executor *Executor) TryToEnqueue(function func()) error {
 //
 // function - simple Golang function - a unit of work that will be scheduled for execution as soon as there is a free worker to tackle it.
 // function cannot be 'nil'.
+//
+// Enqueue is safe to use in multi-threaded environment
 func (executor *Executor) Enqueue(function func()) {
 	if function == nil {
 		panic("cannot enqueue 'nil' function for execution")

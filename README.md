@@ -9,7 +9,7 @@ This package implements ["Thread-Pool"](https://en.wikipedia.org/wiki/Thread_poo
 
 Its main purpose is to decouple business logic from the logic necessary for go-routines management.
 
-Go-Execute is designed to be simple and lightweight yet flexible enough to suit your needs.
+Go-Execute is designed to be simple and lightweight yet flexible enough to suit your needs. It is safe to use in multi-threaded environment (you can enqueue Jobs from different go-routines and expect Executor to work correctly).
 
 ## Example (basic enqueueing)
 
