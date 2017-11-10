@@ -9,7 +9,7 @@ This package implements ["Thread-Pool"](https://en.wikipedia.org/wiki/Thread_poo
 
 Its main purpose is to decouple business logic from the logic necessary for go-routines management.
 
-## Example (basic)
+## Example (basic enqueueing)
 
 ```Go
 package main
