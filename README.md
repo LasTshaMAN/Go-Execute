@@ -28,7 +28,7 @@ func main()  {
 	})
 
 	fmt.Println("This statement will probably be reached first")
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Second)
 }
 ```
 
@@ -44,18 +44,18 @@ import (
 )
 
 func main()  {
-    rand.Seed(time.Now().UTC().UnixNano())
+	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
 	for {
 		err := executor.TryToEnqueue(func() {
-        	time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
-        	fmt.Println("Some task has finished")
-        })
-        if err != nil {
-        	fmt.Println("Executor is full, can't enqueue more jobs at the moment ...")
-        	time.Sleep(1 * time.Second)
-        }
+			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
+			fmt.Println("Some task has finished")
+		})
+		if err != nil {
+			fmt.Println("Executor is full, can't enqueue more jobs at the moment ...")
+			time.Sleep(1 * time.Second)
+		}
 	}
 }
 ```
@@ -73,16 +73,16 @@ import (
 
 func main()  {
 	rand.Seed(time.Now().UTC().UnixNano())
-    executor := jobs.NewExecutor(4, 4)
+	executor := jobs.NewExecutor(4, 4)
 
-    out := make(chan int)
-    executor.Enqueue(func() {
-    	fmt.Println("Some work is done here ...")
-    	out <- rand.Intn(10)
-    })
+	out := make(chan int)
+	executor.Enqueue(func() {
+		fmt.Println("Some work is done here ...")
+		out <- rand.Intn(10)
+	})
 
-    result := <-out
-    fmt.Printf("result = %d", result)
+	result := <-out
+	fmt.Printf("result = %d", result)
 }
 ```
 
