@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"Go-Execute/jobs"
+	"github.com/LasTshaMAN/Go-Execute/jobs"
 )
 
 func TestBasicLifecycle(t *testing.T) {
@@ -94,7 +94,7 @@ func TestJobExecution(t *testing.T) {
 		executor := jobs.NewExecutor(4, 4)
 
 		jobsAmount := 16
-		out := make(chan bool, 7)
+		out := make(chan bool, 8)
 		function := func() {
 			out <- true
 		}
