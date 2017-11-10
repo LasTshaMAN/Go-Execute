@@ -32,7 +32,7 @@ func TestJobEnqueueing(t *testing.T) {
 		executor := jobs.NewExecutor(4, 4)
 
 		executor.Enqueue(func() {})
-		err := executor.EnqueueAsync(func() {})
+		err := executor.TryToEnqueue(func() {})
 
 		assert.NoError(t, err)
 	})
@@ -44,7 +44,7 @@ func TestJobEnqueueing(t *testing.T) {
 		executor.Enqueue(func() {
 			someFunction("one", 1)
 		})
-		err := executor.EnqueueAsync(func() {
+		err := executor.TryToEnqueue(func() {
 			someFunction("one", 1)
 		})
 
@@ -58,7 +58,7 @@ func TestJobEnqueueing(t *testing.T) {
 			executor.Enqueue(nil)
 		})
 		assert.Panics(t, func() {
-			executor.EnqueueAsync(nil)
+			executor.TryToEnqueue(nil)
 		})
 	})
 
@@ -72,7 +72,7 @@ func TestJobEnqueueing(t *testing.T) {
 			executor.Enqueue(toughJob)
 		}
 
-		err := executor.EnqueueAsync(func() {})
+		err := executor.TryToEnqueue(func() {})
 		assert.Error(t, err)
 	})
 }
