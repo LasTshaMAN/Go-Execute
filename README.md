@@ -25,7 +25,7 @@ import (
 func main()  {
 	executor := jobs.NewExecutor(4, 4)
 
-    // Will block current go-routine if Executor is busy
+	// Will block current go-routine if Executor is busy
 	executor.Enqueue(func() {
 		fmt.Println("World")
 	})
@@ -50,9 +50,9 @@ func main()  {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
-    // Tasks keep coming ...
+	// Tasks keep coming ...
 	for {
-	    // Will not block current go-routine
+		// Will not block current go-routine
 		err := executor.TryToEnqueue(func() {
 			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 			fmt.Println("Some task has finished")
