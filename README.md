@@ -91,6 +91,10 @@ func main()  {
 }
 ```
 
+## Example (more elaborate ones)
+
+For more real-world examples check out [examples](https://godoc.org/github.com/LasTshaMAN/Go-Execute/examples) directory.
+
 ## Docs
 
 https://godoc.org/github.com/LasTshaMAN/Go-Execute/jobs
