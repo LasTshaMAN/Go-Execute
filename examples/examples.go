@@ -10,11 +10,12 @@ import (
 func BasicEnqueueing() {
 	executor := jobs.NewExecutor(4, 4)
 
+	// Will block current go-routine if Executor is busy
 	executor.Enqueue(func() {
-		fmt.Println("Will be executed at some point in the future asynchronously")
+		fmt.Println("World")
 	})
 
-	fmt.Println("This statement will probably be reached first")
+	fmt.Println("Hello")
 	time.Sleep(time.Second)
 }
 
@@ -22,7 +23,9 @@ func NonBlockingEnqueueing() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
+	// Tasks keep coming ...
 	for {
+		// Will not block current go-routine
 		err := executor.TryToEnqueue(func() {
 			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
 			fmt.Println("Some task has finished")
