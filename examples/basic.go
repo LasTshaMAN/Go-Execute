@@ -50,3 +50,24 @@ func GettingResultBack() {
 	result := <-out
 	fmt.Printf("result = %d", result)
 }
+
+func EnqueueingFromMultipleThreads() {
+	rand.Seed(time.Now().UTC().UnixNano())
+	executor := jobs.NewExecutor(4, 4)
+
+	out := make(chan int)
+	for i := 0; i < 16; i++ {
+		go func() {
+			executor.Enqueue(func() {
+				workAmount := rand.Intn(10)
+				fmt.Printf("Finished processing %d\n", workAmount)
+				out <- workAmount
+			})
+		}()
+	}
+
+	for i := 0; i < 16; i++ {
+		result := <-out
+		fmt.Printf("result = %d\n", result)
+	}
+}
