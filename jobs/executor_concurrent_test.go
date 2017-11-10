@@ -1,10 +1,10 @@
 package jobs_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	"github.com/LasTshaMAN/Go-Execute/jobs"
-	"testing"
+	"github.com/stretchr/testify/assert"
 	"sync"
+	"testing"
 )
 
 func TestJobEnqueueingConcurrent(t *testing.T) {

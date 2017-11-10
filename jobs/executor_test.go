@@ -3,8 +3,8 @@ package jobs_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/LasTshaMAN/Go-Execute/jobs"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBasicLifecycle(t *testing.T) {
