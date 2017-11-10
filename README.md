@@ -93,7 +93,7 @@ func main()  {
 
 ## Example (more elaborate ones)
 
-For more real-world examples check out [examples](https://godoc.org/github.com/LasTshaMAN/Go-Execute/examples) directory.
+For more real-world examples check out [examples](https://github.com/LasTshaMAN/Go-Execute/tree/master/examples) directory.
 
 ## Docs
 
