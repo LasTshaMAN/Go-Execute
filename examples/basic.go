@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func BasicEnqueueing() {
+func basicEnqueueing() {
 	executor := jobs.NewExecutor(4, 4)
 
 	// Will block current go-routine if Executor is busy
@@ -19,7 +19,7 @@ func BasicEnqueueing() {
 	time.Sleep(time.Second)
 }
 
-func NonBlockingEnqueueing() {
+func nonBlockingEnqueueing() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
@@ -37,7 +37,7 @@ func NonBlockingEnqueueing() {
 	}
 }
 
-func GettingResultBack() {
+func gettingResultBack() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
@@ -51,7 +51,7 @@ func GettingResultBack() {
 	fmt.Printf("result = %d", result)
 }
 
-func EnqueueingFromMultipleThreads() {
+func enqueueingFromMultipleThreads() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 

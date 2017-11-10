@@ -19,7 +19,7 @@ func TestBasicLifecycle(t *testing.T) {
 			jobs.NewExecutor(0, 4)
 		})
 	})
-
+	
 	t.Run("shouldn't be able to create Executor with 0 queue size", func(t *testing.T) {
 		assert.Panics(t, func() {
 			jobs.NewExecutor(4, 0)
