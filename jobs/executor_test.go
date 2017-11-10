@@ -62,7 +62,7 @@ func TestJobEnqueueing(t *testing.T) {
 		})
 	})
 
-	t.Run("shouldn't be able to enqueue function asynchronously when Executor's queue is full", func(t *testing.T) {
+	t.Run("should refuse an attempt to enqueue function when Executor's queue is full", func(t *testing.T) {
 		executor := jobs.NewExecutor(4, 4)
 
 		toughJob := func() {
