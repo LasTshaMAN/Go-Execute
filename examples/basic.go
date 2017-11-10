@@ -57,6 +57,7 @@ func EnqueueingFromMultipleThreads() {
 
 	out := make(chan int)
 	for i := 0; i < 16; i++ {
+		// Different go-routines use Executor to enqueue Jobs
 		go func() {
 			executor.Enqueue(func() {
 				workAmount := rand.Intn(10)
@@ -66,6 +67,7 @@ func EnqueueingFromMultipleThreads() {
 		}()
 	}
 
+	// Getting the results of executed Jobs
 	for i := 0; i < 16; i++ {
 		result := <-out
 		fmt.Printf("result = %d\n", result)
