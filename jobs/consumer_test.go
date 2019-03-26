@@ -7,24 +7,26 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestWorker(t *testing.T) {
-	t.Run("should refuse to consume nil job queue", func(t *testing.T) {
+func TestConsume(t *testing.T) {
+	t.Run("should do nothing when job queue is nil", func(t *testing.T) {
 		var jobQueue chan func()
 
-		require.Error(t, consume(jobQueue))
+		require.NotPanics(t, func() {
+			consume(jobQueue)
+		})
 	})
 
 	t.Run("should be able to consume empty job queue", func(t *testing.T) {
 		jobQueue := make(chan func())
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 	})
 
 	t.Run("should take jobs from queue", func(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 
 		// Should not block
 		jobQueue <- func() {}
@@ -34,7 +36,7 @@ func TestWorker(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 
 		close(jobQueue)
 		time.Sleep(200 * time.Millisecond)
@@ -47,7 +49,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 
 		ok := <-out
 		require.True(t, ok)
@@ -60,7 +62,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 
 		ok := <-out
 		require.True(t, ok)
@@ -78,7 +80,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		require.NoError(t, consume(jobQueue))
+		consume(jobQueue)
 
 		ok := <-out
 		require.True(t, ok)

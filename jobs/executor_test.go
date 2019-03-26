@@ -13,7 +13,7 @@ func TestBasicLifecycle(t *testing.T) {
 
 		require.NotNil(t, executor)
 	})
-	t.Run("shouldn be able to create Executor with 0 amount of workers and 0 queue size", func(t *testing.T) {
+	t.Run("shouldn't be able to create Executor with 0 amount of workers and 0 queue size", func(t *testing.T) {
 		executor := jobs.NewExecutor(0, 0)
 
 		require.NotNil(t, executor)
@@ -51,7 +51,7 @@ func TestJobEnqueueing(t *testing.T) {
 			executor.Enqueue(nil)
 		})
 		require.NotPanics(t, func() {
-			_ = executor.TryToEnqueue(nil)
+			executor.TryToEnqueue(nil)
 		})
 	})
 

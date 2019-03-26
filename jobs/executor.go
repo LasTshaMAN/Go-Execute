@@ -29,7 +29,7 @@ type Executor struct {
 func NewExecutor(workersAmount uint, queueSize uint) *Executor {
 	jobQueue := make(chan func(), queueSize)
 	for i := uint(0); i < workersAmount; i++ {
-		_ = consume(jobQueue)
+		consume(jobQueue)
 	}
 	return &Executor{
 		jobQueue: jobQueue,

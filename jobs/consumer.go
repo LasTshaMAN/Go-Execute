@@ -1,10 +1,8 @@
 package jobs
 
-import "errors"
-
-func consume(jobQueue <-chan func()) error {
+func consume(jobQueue <-chan func()) {
 	if jobQueue == nil {
-		return errors.New("can't consume nil job queue")
+		return
 	}
 
 	go func() {
@@ -12,6 +10,4 @@ func consume(jobQueue <-chan func()) error {
 			function()
 		}
 	}()
-
-	return nil
 }
