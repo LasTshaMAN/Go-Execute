@@ -1,6 +1,6 @@
 package jobs
 
-func Consume(jobQueue <-chan func()) {
+func consume(jobQueue <-chan func()) {
 	if jobQueue == nil {
 		panic("can't consume nil job queue")
 	}

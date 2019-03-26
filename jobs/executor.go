@@ -36,7 +36,7 @@ func NewExecutor(workersAmount int, queueSize int) *Executor {
 
 	jobQueue := make(chan func(), queueSize)
 	for i := 0; i < workersAmount; i++ {
-		Consume(jobQueue)
+		consume(jobQueue)
 	}
 
 	return &Executor{

@@ -12,7 +12,7 @@ func TestWorker(t *testing.T) {
 		var jobQueue chan func()
 
 		assert.Panics(t, func() {
-			Consume(jobQueue)
+			consume(jobQueue)
 		})
 	})
 
@@ -20,7 +20,7 @@ func TestWorker(t *testing.T) {
 		jobQueue := make(chan func())
 
 		assert.NotPanics(t, func() {
-			Consume(jobQueue)
+			consume(jobQueue)
 		})
 	})
 
@@ -28,7 +28,7 @@ func TestWorker(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		Consume(jobQueue)
+		consume(jobQueue)
 
 		// Should not block
 		jobQueue <- func() {}
@@ -38,7 +38,7 @@ func TestWorker(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		Consume(jobQueue)
+		consume(jobQueue)
 
 		close(jobQueue)
 		time.Sleep(200 * time.Millisecond)
@@ -51,7 +51,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		Consume(jobQueue)
+		consume(jobQueue)
 
 		ok := <-out
 		assert.True(t, ok)
@@ -64,7 +64,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		Consume(jobQueue)
+		consume(jobQueue)
 
 		ok := <-out
 		assert.True(t, ok)
@@ -82,7 +82,7 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		Consume(jobQueue)
+		consume(jobQueue)
 
 		ok := <-out
 		assert.True(t, ok)

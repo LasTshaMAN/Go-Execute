@@ -1,9 +1,9 @@
 package jobs_test
 
 import (
+	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"testing"
 
-	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"github.com/stretchr/testify/assert"
 )
 
