@@ -34,14 +34,9 @@ func NewExecutor(workersAmount int, queueSize int) *Executor {
 		panic("amount of workers must be a positive number")
 	}
 
-	workers := make([]*worker, 0, workersAmount)
-	for i := 0; i < workersAmount; i++ {
-		workers = append(workers, newWorker())
-	}
-
 	jobQueue := make(chan func(), queueSize)
-	for _, worker := range workers {
-		worker.Consume(jobQueue)
+	for i := 0; i < workersAmount; i++ {
+		Consume(jobQueue)
 	}
 
 	return &Executor{

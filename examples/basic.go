@@ -51,7 +51,7 @@ func gettingResultBack() {
 	fmt.Printf("result = %d", result)
 }
 
-func enqueueingFromMultipleThreads() {
+func enqueueingFromMultipleGoRoutines() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	executor := jobs.NewExecutor(4, 4)
 
