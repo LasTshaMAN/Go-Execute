@@ -4,31 +4,27 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWorker(t *testing.T) {
 	t.Run("should refuse to consume nil job queue", func(t *testing.T) {
 		var jobQueue chan func()
 
-		assert.Panics(t, func() {
-			consume(jobQueue)
-		})
+		require.Error(t, consume(jobQueue))
 	})
 
 	t.Run("should be able to consume empty job queue", func(t *testing.T) {
 		jobQueue := make(chan func())
 
-		assert.NotPanics(t, func() {
-			consume(jobQueue)
-		})
+		require.NoError(t, consume(jobQueue))
 	})
 
 	t.Run("should take jobs from queue", func(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		consume(jobQueue)
+		require.NoError(t, consume(jobQueue))
 
 		// Should not block
 		jobQueue <- func() {}
@@ -38,7 +34,7 @@ func TestWorker(t *testing.T) {
 		jobQueue := make(chan func(), 1)
 		jobQueue <- func() {}
 
-		consume(jobQueue)
+		require.NoError(t, consume(jobQueue))
 
 		close(jobQueue)
 		time.Sleep(200 * time.Millisecond)
@@ -51,10 +47,10 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		consume(jobQueue)
+		require.NoError(t, consume(jobQueue))
 
 		ok := <-out
-		assert.True(t, ok)
+		require.True(t, ok)
 	})
 
 	t.Run("should execute jobs taken from queue", func(t *testing.T) {
@@ -64,10 +60,10 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		consume(jobQueue)
+		require.NoError(t, consume(jobQueue))
 
 		ok := <-out
-		assert.True(t, ok)
+		require.True(t, ok)
 	})
 
 	t.Run("should execute only one job at a time according to queue's order", func(t *testing.T) {
@@ -82,10 +78,10 @@ func TestWorker(t *testing.T) {
 			out <- true
 		}
 
-		consume(jobQueue)
+		require.NoError(t, consume(jobQueue))
 
 		ok := <-out
-		assert.True(t, ok)
-		assert.True(t, firstJobFinished)
+		require.True(t, ok)
+		require.True(t, firstJobFinished)
 	})
 }

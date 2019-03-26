@@ -23,22 +23,14 @@ type Executor struct {
 
 // NewExecutor returns a new Executor object - a means to enqueue your functions for execution.
 //
-// workersAmount - specifies, how many workers(go-routines) Executor will use to handle functions, sent for execution. Executor will run its workers in parallel. workersAmount must be > 0.
+// workersAmount - specifies, how many workers(go-routines) Executor will use to handle functions, sent for execution. Executor will run its workers in parallel.
 //
-// queueSize - specifies, how many functions executor can easily hold to (either keeping them in queue or executing them) at any given time. queueSize must be > 0.
-func NewExecutor(workersAmount int, queueSize int) *Executor {
-	if queueSize < 1 {
-		panic("queue size must be a positive number")
-	}
-	if workersAmount < 1 {
-		panic("amount of workers must be a positive number")
-	}
-
+// queueSize - specifies, how many functions executor can easily hold to (either keeping them in queue or executing them) at any given time.
+func NewExecutor(workersAmount uint, queueSize uint) *Executor {
 	jobQueue := make(chan func(), queueSize)
-	for i := 0; i < workersAmount; i++ {
-		consume(jobQueue)
+	for i := uint(0); i < workersAmount; i++ {
+		_ = consume(jobQueue)
 	}
-
 	return &Executor{
 		jobQueue: jobQueue,
 	}
@@ -76,7 +68,7 @@ func (executor *Executor) TryToEnqueue(function func()) error {
 // Enqueue is safe to use in multi-threaded environment
 func (executor *Executor) Enqueue(function func()) {
 	if function == nil {
-		panic("cannot enqueue 'nil' function for execution")
+		return
 	}
 	executor.jobQueue <- function
 }

@@ -1,29 +1,22 @@
 package jobs_test
 
 import (
-	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/LasTshaMAN/Go-Execute/jobs"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBasicLifecycle(t *testing.T) {
 	t.Run("should be able to create Executor", func(t *testing.T) {
 		executor := jobs.NewExecutor(4, 4)
 
-		assert.NotNil(t, executor)
+		require.NotNil(t, executor)
 	})
+	t.Run("shouldn be able to create Executor with 0 amount of workers and 0 queue size", func(t *testing.T) {
+		executor := jobs.NewExecutor(0, 0)
 
-	t.Run("shouldn't be able to create Executor with 0 amount of workers", func(t *testing.T) {
-		assert.Panics(t, func() {
-			jobs.NewExecutor(0, 4)
-		})
-	})
-	
-	t.Run("shouldn't be able to create Executor with 0 queue size", func(t *testing.T) {
-		assert.Panics(t, func() {
-			jobs.NewExecutor(4, 0)
-		})
+		require.NotNil(t, executor)
 	})
 }
 
@@ -34,7 +27,7 @@ func TestJobEnqueueing(t *testing.T) {
 		executor.Enqueue(func() {})
 		err := executor.TryToEnqueue(func() {})
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("should be able to enqueue function with args for running", func(t *testing.T) {
@@ -48,32 +41,40 @@ func TestJobEnqueueing(t *testing.T) {
 			someFunction("one", 1)
 		})
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("shouldn't be able to enqueue 'nil' function for running", func(t *testing.T) {
 		executor := jobs.NewExecutor(4, 4)
 
-		assert.Panics(t, func() {
+		require.NotPanics(t, func() {
 			executor.Enqueue(nil)
 		})
-		assert.Panics(t, func() {
-			executor.TryToEnqueue(nil)
+		require.NotPanics(t, func() {
+			_ = executor.TryToEnqueue(nil)
 		})
 	})
 
 	t.Run("should refuse an attempt to enqueue function when Executor's queue is full", func(t *testing.T) {
-		executor := jobs.NewExecutor(4, 4)
+		t.Run("zero workers, zero queue size case", func(t *testing.T) {
+			executor := jobs.NewExecutor(0, 0)
 
-		toughJob := func() {
-			select {}
-		}
-		for i := 0; i < 8; i++ {
-			executor.Enqueue(toughJob)
-		}
+			err := executor.TryToEnqueue(func() {})
+			require.Error(t, err)
+		})
+		t.Run("basic case", func(t *testing.T) {
+			executor := jobs.NewExecutor(4, 4)
 
-		err := executor.TryToEnqueue(func() {})
-		assert.Error(t, err)
+			toughJob := func() {
+				select {}
+			}
+			for i := 0; i < 8; i++ {
+				executor.Enqueue(toughJob)
+			}
+
+			err := executor.TryToEnqueue(func() {})
+			require.Error(t, err)
+		})
 	})
 }
 
@@ -87,7 +88,7 @@ func TestJobExecution(t *testing.T) {
 		})
 
 		ok := <-out
-		assert.True(t, ok)
+		require.True(t, ok)
 	})
 
 	t.Run("should execute multiple enqueued functions eventually", func(t *testing.T) {
@@ -104,7 +105,7 @@ func TestJobExecution(t *testing.T) {
 
 		for i := 0; i < jobsAmount; i++ {
 			ok := <-out
-			assert.True(t, ok)
+			require.True(t, ok)
 		}
 	})
 }

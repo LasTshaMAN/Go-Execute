@@ -1,10 +1,11 @@
 package jobs_test
 
 import (
-	"github.com/LasTshaMAN/Go-Execute/jobs"
-	"github.com/stretchr/testify/assert"
 	"sync"
 	"testing"
+
+	"github.com/LasTshaMAN/Go-Execute/jobs"
+	"github.com/stretchr/testify/require"
 )
 
 func TestJobEnqueueingConcurrent(t *testing.T) {
@@ -18,7 +19,7 @@ func TestJobEnqueueingConcurrent(t *testing.T) {
 			go func() {
 				executor.Enqueue(func() {})
 				err := executor.TryToEnqueue(func() {})
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				wg.Done()
 			}()
 		}
@@ -44,7 +45,7 @@ func TestJobEnqueueingConcurrent(t *testing.T) {
 
 		wg.Wait()
 		err := executor.TryToEnqueue(func() {})
-		assert.Error(t, err)
+		require.Error(t, err)
 	})
 }
 
@@ -64,7 +65,7 @@ func TestJobExecutionConcurrent(t *testing.T) {
 
 		for i := 0; i < 8; i++ {
 			ok := <-out
-			assert.True(t, ok)
+			require.True(t, ok)
 		}
 	})
 }
