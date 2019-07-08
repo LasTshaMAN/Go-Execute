@@ -1,6 +1,8 @@
 language: go
-go: 1.9
+go: 1.12
+env:
+  - GO111MODULE=on
 script:
-  - go test -race -v -timeout 10s -coverprofile=coverage.txt -covermode=atomic ./jobs
+  - go test -race -v -timeout 10s -coverprofile=coverage.txt -covermode=atomic ./executor
 after_success:
   - bash <(curl -s https://codecov.io/bash)

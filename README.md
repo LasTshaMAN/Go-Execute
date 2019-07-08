@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/LasTshaMAN/Go-Execute.svg?branch=master)](https://travis-ci.org/LasTshaMAN/Go-Execute)
 [![Go Report Card](https://goreportcard.com/badge/github.com/LasTshaMAN/Go-Execute)](https://goreportcard.com/report/github.com/LasTshaMAN/Go-Execute)
 [![codecov](https://codecov.io/gh/LasTshaMAN/Go-Execute/branch/master/graph/badge.svg)](https://codecov.io/gh/LasTshaMAN/Go-Execute)
-[![GoDoc](https://godoc.org/github.com/LasTshaMAN/Go-Execute/jobs?status.svg)](https://godoc.org/github.com/LasTshaMAN/Go-Execute/jobs)
+[![GoDoc](https://godoc.org/github.com/LasTshaMAN/Go-Execute/executor?status.svg)](https://godoc.org/github.com/LasTshaMAN/Go-Execute/executor)
 
 # Simple Executor for Golang to run your Jobs
 
@@ -17,21 +17,22 @@ Go-Execute is designed to be simple and lightweight yet flexible enough to suit 
 package main
 
 import (
-	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"fmt"
 	"time"
+
+	"github.com/LasTshaMAN/Go-Execute/executor"
 )
 
-func main()  {
-	executor := jobs.NewExecutor(4, 4)
+func basicBlockingEnqueueing() {
+	exec := executor.New(4)
 
 	// Will block current go-routine if Executor is busy
-	executor.Enqueue(func() {
+	exec.Enqueue(func() {
 		fmt.Println("World")
 	})
 
 	fmt.Println("Hello")
-	time.Sleep(time.Second)
+	time.Sleep(time.Millisecond)
 }
 ```
 
@@ -41,27 +42,26 @@ func main()  {
 package main
 
 import (
-	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"fmt"
 	"time"
+
+	"github.com/LasTshaMAN/Go-Execute/executor"
 )
 
-func main()  {
-	rand.Seed(time.Now().UTC().UnixNano())
-	executor := jobs.NewExecutor(4, 4)
+func basicNonBlockingEnqueueing() {
+	exec := executor.New(4)
 
-	// Tasks keep coming ...
-	for {
-		// Will not block current go-routine
-		err := executor.TryToEnqueue(func() {
-			time.Sleep(time.Duration(rand.Intn(3)) * time.Second)
-			fmt.Println("Some task has finished")
-		})
-		if err != nil {
-			fmt.Println("Executor is full, can't enqueue more jobs at the moment ...")
-			time.Sleep(1 * time.Second)
-		}
+	// Will block current go-routine if Executor is busy
+	err := exec.TryEnqueue(func() {
+		fmt.Println("World")
+	})
+	if err != nil {
+		fmt.Println("Executor is full, can't enqueue more jobs at the moment ...")
+		time.Sleep(1 * time.Millisecond)
 	}
+
+	fmt.Println("Hello")
+	time.Sleep(time.Millisecond)
 }
 ```
 
@@ -71,17 +71,19 @@ func main()  {
 package main
 
 import (
-	"github.com/LasTshaMAN/Go-Execute/jobs"
 	"fmt"
+	"math/rand"
 	"time"
+
+	"github.com/LasTshaMAN/Go-Execute/executor"
 )
 
-func main()  {
+func gettingTheResultBack() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	executor := jobs.NewExecutor(4, 4)
+	exec := executor.New(4)
 
 	out := make(chan int)
-	executor.Enqueue(func() {
+	exec.Enqueue(func() {
 		fmt.Println("Some work is done here ...")
 		out <- rand.Intn(10)
 	})
@@ -91,18 +93,43 @@ func main()  {
 }
 ```
 
+## Example (waiting for all the jobs to finish)
+
+```Go
+package main
+
+import (
+	"fmt"
+
+	"github.com/LasTshaMAN/Go-Execute/executor"
+)
+
+func enqueueAndWait() {
+	exec := executor.New(4)
+
+	for _, jobID := range []int64{1, 2, 3} {
+		exec.Enqueue(func() {
+			fmt.Printf("job: %d", jobID)
+		})
+	}
+	exec.Wait()
+
+	fmt.Println("All the jobs are done")
+}
+```
+
 ## Example (more elaborate ones)
 
 For more real-world examples check out [examples](https://github.com/LasTshaMAN/Go-Execute/tree/master/examples) directory.
 
 ## Docs
 
-https://godoc.org/github.com/LasTshaMAN/Go-Execute/jobs
+https://godoc.org/github.com/LasTshaMAN/Go-Execute/executor
 
 ## Installation
 
 ```
-go get github.com/LasTshaMAN/Go-Execute/jobs
+go get github.com/LasTshaMAN/Go-Execute/executor
 ```
 
 ## Contributing
