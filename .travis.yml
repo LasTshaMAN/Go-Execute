@@ -1,5 +1,7 @@
 language: go
 go: 1.12
+env:
+  - GO111MODULE=on
 script:
   - go test -race -v -timeout 10s -coverprofile=coverage.txt -covermode=atomic ./jobs
 after_success:
