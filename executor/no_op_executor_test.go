@@ -96,3 +96,11 @@ func TestTryEnqueueNoOp(t *testing.T) {
 		}
 	})
 }
+
+func TestWaitNoOp(t *testing.T) {
+	t.Run("should not block", func(t *testing.T) {
+		exec := executor.New(0)
+
+		exec.Wait()
+	})
+}
