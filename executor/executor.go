@@ -1,19 +1,21 @@
 package executor
 
 import (
+	"context"
 	"fmt"
-	"sync"
+
+	"golang.org/x/sync/semaphore"
 )
 
 type executor struct {
-	workers chan struct{}
-	wg      *sync.WaitGroup
+	workersCnt uint
+	sem        *semaphore.Weighted
 }
 
 func newExecutor(workersCnt uint) *executor {
 	return &executor{
-		workers: make(chan struct{}, workersCnt),
-		wg:      &sync.WaitGroup{},
+		workersCnt: workersCnt,
+		sem:        semaphore.NewWeighted(int64(workersCnt)),
 	}
 }
 
@@ -22,14 +24,10 @@ func (exec *executor) Enqueue(fn func()) {
 		return
 	}
 
-	exec.workers <- struct{}{}
-	exec.wg.Add(1)
-
+	_ = exec.sem.Acquire(context.Background(), 1)
 	go func() {
 		fn()
-
-		<-exec.workers
-		exec.wg.Done()
+		exec.sem.Release(1)
 	}()
 }
 
@@ -38,23 +36,19 @@ func (exec *executor) TryEnqueue(fn func()) error {
 		return nil
 	}
 
-	select {
-	case exec.workers <- struct{}{}:
-		exec.wg.Add(1)
-	default:
+	success := exec.sem.TryAcquire(1)
+	if !success {
 		return fmt.Errorf("queue is full at the moment")
 	}
-
 	go func() {
 		fn()
-
-		<-exec.workers
-		exec.wg.Done()
+		exec.sem.Release(1)
 	}()
 
 	return nil
 }
 
 func (exec *executor) Wait() {
-	exec.wg.Wait()
+	_ = exec.sem.Acquire(context.Background(), int64(exec.workersCnt))
+	exec.sem.Release(int64(exec.workersCnt))
 }

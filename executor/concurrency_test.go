@@ -123,7 +123,8 @@ func TestWaitConcurrent(t *testing.T) {
 			scheduled <- struct{}{}
 		}()
 
-		// Make sure some of the jobs were scheduled from another go-routines first.
+		// Make sure all the jobs were scheduled from another go-routines first.
+		<-scheduled
 		<-scheduled
 
 		exec.Wait()
